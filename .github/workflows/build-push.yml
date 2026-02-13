@@ -1,0 +1,83 @@
+name: Build & Push to ACR + Docker Hub
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 检查 ACR 和 Docker Hub 凭证检查
+      - name: Check registry credentials
+        id: check_creds
+        run: |
+          ACR_ENABLED=false
+          DH_ENABLED=false
+
+          if [ -n "${{ secrets.ALIYUN_USERNAME }}" ] && [ -n "${{ secrets.ALIYUN_PASSWORD }}" ]; then
+            ACR_ENABLED=true
+          fi
+
+          if [ -n "${{ secrets.DOCKERHUB_USERNAME }}" ] && [ -n "${{ secrets.DOCKERHUB_TOKEN }}" ]; then
+            DH_ENABLED=true
+          fi
+
+          echo "acr_enabled=$ACR_ENABLED" >> $GITHUB_OUTPUT
+          echo "dh_enabled=$DH_ENABLED" >> $GITHUB_OUTPUT
+
+          if [ "$ACR_ENABLED" = "false" ] && [ "$DH_ENABLED" = "false" ]; then
+            echo "错误：缺少所有 registry 的凭证"
+            exit 1
+          fi
+
+          if [ "$ACR_ENABLED" = "false" ]; then
+            echo "警告：缺少阿里云 ACR 凭证，跳过推送至 ACR"
+          fi
+
+          if [ "$DH_ENABLED" = "false" ]; then
+            echo "警告：缺少 Docker Hub 凭证，跳过推送至 Docker Hub"
+          fi
+
+      # 登录 ACR（仅当有凭证时）
+      - name: Login to Alibaba Cloud ACR
+        if: steps.check_creds.outputs.acr_enabled == 'true'
+        uses: docker/login-action@v3
+        with:
+          registry: crpi-ggljmhwb6ism9yo5.cn-beijing.personal.cr.aliyuncs.com
+          username: ${{ secrets.ALIYUN_USERNAME }}
+          password: ${{ secrets.ALIYUN_PASSWORD }}
+
+      # 登录 Docker Hub（仅当有凭证时）
+      - name: Login to Docker Hub
+        if: steps.check_creds.outputs.dh_enabled == 'true'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # 设置 Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 构建并推送（动态 tags）
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          # 只有在非 PR 且至少有一个登录成功时才真正 Push
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: |
+            ${{ steps.check_creds.outputs.acr_enabled == 'true' && 'crpi-ggljmhwb6ism9yo5.cn-beijing.personal.cr.aliyuncs.com/mankin/android-builder:api36' || '' }}
+            ${{ steps.check_creds.outputs.acr_enabled == 'true' && 'crpi-ggljmhwb6ism9yo5.cn-beijing.personal.cr.aliyuncs.com/mankin/android-builder:latest' || '' }}
+            ${{ steps.check_creds.outputs.dh_enabled == 'true' && 'mankin/android-builder:api36' || '' }}
+            ${{ steps.check_creds.outputs.dh_enabled == 'true' && 'mankin/android-builder:latest' || '' }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
