@@ -27,5 +27,5 @@ jobs:
           context: .
           push: true
           tags: |
-            crpi-ggljmhwb6ism9yo5.cn-beijing.personal.cr.aliyuncs.com/mankin/android-build:36
-            crpi-ggljmhwb6ism9yo5.cn-beijing.personal.cr.aliyuncs.com/mankin/android-build:latest
+            crpi-ggljmhwb6ism9yo5.cn-beijing.personal.cr.aliyuncs.com/mankin/android-builder:api36
+            crpi-ggljmhwb6ism9yo5.cn-beijing.personal.cr.aliyuncs.com/mankin/android-builder:latest
