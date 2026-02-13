@@ -30,7 +30,7 @@ RUN mkdir -p ~/.android && touch ~/.android/repositories.cfg && \
     "platform-tools"
 
 # 5. 安装 Gradle 8.14.4
-RUN wget -q https://services.gradle.org/distributions/gradle-8.14.4-bin.zip -o /tmp/gradle.zip && \
+RUN wget -q https://services.gradle.org/distributions/gradle-8.14.4-bin.zip -O /tmp/gradle.zip && \
     unzip -q /tmp/gradle.zip -d /opt && \
     mv /opt/gradle-8.14.4 ${GRADLE_HOME} && \
     rm /tmp/gradle.zip
