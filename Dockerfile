@@ -3,7 +3,6 @@ FROM ubuntu:24.04
 # 1. 设置环境变量
 ENV ANDROID_HOME=/opt/android-sdk
 ENV GRADLE_HOME=/opt/gradle
-ENV GRADLE_OPTS="-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs='-Xmx2048m -XX:MaxMetaspaceSize=512m'"
 ENV PATH=${PATH}:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools:${GRADLE_HOME}/bin
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -12,6 +11,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     wget \
     unzip \
+    zip \
+    pigz \
+    curl \
     openjdk-17-jdk-headless \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
@@ -27,7 +29,6 @@ RUN mkdir -p ${ANDROID_HOME}/cmdline-tools && \
 RUN mkdir -p ~/.android && touch ~/.android/repositories.cfg && \
     yes | sdkmanager --licenses && \
     sdkmanager "platforms;android-36" \
-    "build-tools;36.1.0" \
     "build-tools;36.0.0" \
     "build-tools;35.0.0" \
     "platform-tools"
