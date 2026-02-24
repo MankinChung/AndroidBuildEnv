@@ -3,11 +3,13 @@ FROM ubuntu:24.04
 # 1. 设置环境变量
 ENV ANDROID_HOME=/opt/android-sdk
 ENV GRADLE_HOME=/opt/gradle
+ENV GRADLE_OPTS="-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs='-Xmx2048m -XX:MaxMetaspaceSize=512m'"
 ENV PATH=${PATH}:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools:${GRADLE_HOME}/bin
 ARG DEBIAN_FRONTEND=noninteractive
 
 # 2. 合并安装基础工具和 Java 17
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
     wget \
     unzip \
     openjdk-17-jdk-headless \
@@ -34,6 +36,8 @@ RUN wget -q https://services.gradle.org/distributions/gradle-8.14.4-bin.zip -O /
     unzip -q /tmp/gradle.zip -d /opt && \
     mv /opt/gradle-8.14.4 ${GRADLE_HOME} && \
     rm /tmp/gradle.zip
+
+RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" > /etc/timezone
 
 WORKDIR /app
 
