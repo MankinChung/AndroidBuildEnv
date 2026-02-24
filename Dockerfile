@@ -29,6 +29,7 @@ RUN mkdir -p ~/.android && touch ~/.android/repositories.cfg && \
     sdkmanager "platforms;android-36" \
     "build-tools;36.1.0" \
     "build-tools;36.0.0" \
+    "build-tools;35.0.0" \
     "platform-tools"
 
 # 5. 安装 Gradle 8.14.4
