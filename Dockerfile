@@ -5,7 +5,7 @@ ENV ANDROID_HOME=/opt/android-sdk
 ENV PATH=${PATH}:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools
 ARG DEBIAN_FRONTEND=noninteractive
 
-# 2. 合并安装基础工具和 Java 21
+# 2. 合并安装基础工具和 Java 17
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     wget \
@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     zip \
     pigz \
     curl \
-    openjdk-21-jdk-headless \
+    openjdk-17-jdk-headless \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
