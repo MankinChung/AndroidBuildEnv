@@ -7,10 +7,10 @@
 ## 🚀 核心特性
 
 * **基础镜像**: Ubuntu 24.04 (Noble Numbat)
-* **JDK**: OpenJDK 17 (Headless)
+* **JDK**: OpenJDK 21 (Headless)
 * **Android SDK**:
 * Compile / Target SDK: `36`
-* Build-Tools: `36.0.0`, `36.1.0`
+* Build-Tools: `36.0.0`, `35.0.0`
 * Platform-tools: 最新版
 
 ---
