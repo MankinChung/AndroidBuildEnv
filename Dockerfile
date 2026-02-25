@@ -2,11 +2,10 @@ FROM ubuntu:24.04
 
 # 1. 设置环境变量
 ENV ANDROID_HOME=/opt/android-sdk
-ENV GRADLE_HOME=/opt/gradle
-ENV PATH=${PATH}:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools:${GRADLE_HOME}/bin
+ENV PATH=${PATH}:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools
 ARG DEBIAN_FRONTEND=noninteractive
 
-# 2. 合并安装基础工具和 Java 17
+# 2. 合并安装基础工具和 Java 21
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     wget \
@@ -14,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     zip \
     pigz \
     curl \
-    openjdk-17-jdk-headless \
+    openjdk-21-jdk-headless \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
@@ -32,12 +31,6 @@ RUN mkdir -p ~/.android && touch ~/.android/repositories.cfg && \
     "build-tools;36.0.0" \
     "build-tools;35.0.0" \
     "platform-tools"
-
-# 5. 安装 Gradle 8.14.4
-RUN wget -q https://services.gradle.org/distributions/gradle-8.14.4-bin.zip -O /tmp/gradle.zip && \
-    unzip -q /tmp/gradle.zip -d /opt && \
-    mv /opt/gradle-8.14.4 ${GRADLE_HOME} && \
-    rm /tmp/gradle.zip
 
 RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" > /etc/timezone
 
